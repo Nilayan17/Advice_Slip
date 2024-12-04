@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Advice Slip Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      background-color: #f3f4f6;
+    }
+    .container {
+      margin: 20px;
+    }
+    .advice-card {
+      display: inline-block;
+      margin: 20px auto;
+      padding: 20px;
+      background: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      max-width: 400px;
+    }
+    .advice-card h3 {
+      margin: 0;
+      font-size: 1.5em;
+      color: #333;
+    }
+    .advice-card p {
+      margin: 10px 0 0;
+      color: #555;
+    }
+    .buttons {
+      margin-top: 20px;
+    }
+    button {
+      margin: 5px;
+      padding: 10px 20px;
+      font-size: 1em;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .generate {
+      background-color: #4caf50;
+      color: white;
+    }
+    .reset {
+      background-color: #f44336;
+      color: white;
+    }
+    .tweet {
+      background-color: #1da1f2;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Advice Slip Generator</h1>
+    <div id="advice-container"></div>
+    <div class="buttons">
+      <button class="generate" onclick="fetchAdvice()">Generate Advice</button>
+      <button class="reset" onclick="resetPage()">Reset</button>
+      <button class="tweet" onclick="tweetAdvice()" disabled>Tweet Advice</button>
+    </div>
+  </div>
+
+  <script>
+    
+    async function fetchAdvice() {
+  try {
+    
+    const response = await fetch(`https://api.adviceslip.com/advice?timestamp=${new Date().getTime()}`);
+    const data = await response.json();
+    const advice = data.slip.advice;
+    const date = new Date();
+    const dateTime = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+    const adviceContainer = document.getElementById("advice-container");
+
+    adviceContainer.innerHTML = `
+      <div class="advice-card">
+        <h3>${advice}</h3>
+        <p>${dateTime}</p>
+      </div>
+    `;
+
+    document.querySelector(".tweet").disabled = false; // Enable Tweet button
+  } catch (error) {
+    console.error("Error fetching advice:", error);
+  }
+}
+
+
+    function resetPage() {
+      document.getElementById("advice-container").innerHTML = "";
+      document.querySelector(".tweet").disabled = true; // Disable Tweet button
+    }
+
+    function tweetAdvice() {
+      const adviceText = document.querySelector(".advice-card h3").innerText;
+      const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(adviceText)}`;
+      window.open(tweetUrl, "_blank");
+    }
+  </script>
+</body>
+</html>
